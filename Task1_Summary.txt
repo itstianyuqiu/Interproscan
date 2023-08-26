@@ -1,0 +1,17 @@
+Project Summary:
+The project appears to be a plugin created for the Geneious software. This plugin enables users to annotate protein sequences using the InterProScan service.
+
+Main Functions:
+1. Users can configure the search parameters for InterProScan.
+2.The plugin sends these parameters and the protein sequence to the InterProScan web service.
+3.Retrieves the search results in XML format returned by InterProScan.
+4.Parses these results and translates them into annotations that Geneious can understand.
+5.Adds these annotations to Geneious.
+
+Code Structure:
+1.InterproscanPlugin.java: Defines the basic information and functionalities of the plugin for Geneious.
+2.InterproscanOptions.java: Provides an interface for users to configure the search options for InterProScan.
+3.InterproscanAnnotationGenerator.java: A core class responsible for interacting with the InterProScan web service and parsing the results.
+4.XmlParser.java: Provides functionalities to extract annotations from the XML results returned by InterProScan.
+5.Runner.java: A test class designed to run and test the plugin functionalities independently.
+6.RunnerTest.java: Unit Test

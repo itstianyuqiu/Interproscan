@@ -1,0 +1,14 @@
+ext {
+    shortName = "InterproscanPlugin"
+    pluginName = "com.michaelrthon.geneiousplugins.interproscan." + shortName;
+}
+
+group 'com.biomatters'
+version '1.0-SNAPSHOT'
+
+apply from: 'geneiousplugin.gradle'
+
+dependencies {
+    implementation 'commons-validator:commons-validator:1.7'
+    testImplementation 'org.mockito:mockito-core:3.12.4'
+}

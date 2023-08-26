@@ -1,0 +1,110 @@
+defaultTasks 'createPlugin';
+
+apply plugin: "java"
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+// IntelliJ IDEA specific configuration required to workaround a bug. See https://intellij-support.jetbrains.com/hc/en-us/community/posts/206842955-builrd-resources-broken-for-gradle-projects-
+apply plugin: "idea"
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+}
+
+repositories {
+    ivy {
+        url "http://assets.geneious.com/developer/geneious/ivy"
+        patternLayout {
+            ivy "[organisation]/[module]/ivys/ivy-[revision].xml"
+            artifact "[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"
+        }
+    }
+    mavenCentral()
+}
+
+configurations {
+    geneiousRuntime
+}
+
+dependencies {
+    implementation group: "com.biomatters", name: "geneious.publicapi", version: "2022.2.1", configuration: "api"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    geneiousRuntime group: "com.biomatters", name: "geneious.publicapi", version: "2022.2.1", configuration: "runtime"
+}
+
+def geneiousFilesName="GeneiousFiles";  // Name of the directory containing the Geneious distribution files.
+tasks.register('extractGeneiousRuntimeFiles', Copy) {
+
+    File zipFile = file(configurations.geneiousRuntime.find {
+        it.getName().startsWith(geneiousFilesName) && it.getName().endsWith(".zip")
+    })
+
+    from zipTree(zipFile)
+    into buildDir
+}
+
+// Running the test task will depend on making the Geneious Runtime available
+tasks.test.dependsOn(extractGeneiousRuntimeFiles)
+
+tasks.test {
+    useJUnitPlatform()
+    workingDir file("$buildDir/$geneiousFilesName")
+    minHeapSize '256M'
+    maxHeapSize '2048M'
+    jvmArgs '-ea',
+            '-XX:MaxNewSize=40M',
+            '-XX:ReservedCodeCacheSize=128m',
+            '-Xss512K',
+            '-XX:+UseConcMarkSweepGC',
+            '-Djava.util.logging.config.file=no_logging.properties',
+            '--add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED'
+    environment "DISPLAY", ":0.0"
+    environment "LD_LIBRARY_PATH", "./activation/linux64:./native_libs/linux64"
+    environment "DYLD_LIBRARY_PATH", "./activation/macos:./native_libs/macos"
+}
+
+jar {
+    include "**/*.class"
+    includeEmptyDirs false
+}
+
+sourceSets {
+    main {
+        File geneiousFiles = file("$buildDir/$geneiousFilesName")
+        runtimeClasspath += files("$geneiousFiles/resources")
+        runtimeClasspath += files("$geneiousFiles/iSeek.jar")
+        runtimeClasspath += fileTree("$geneiousFiles/lib")
+    }
+
+    test {
+        File geneiousFiles = file("$buildDir/$geneiousFilesName")
+        runtimeClasspath += files("$geneiousFiles/resources")
+        runtimeClasspath += files("$geneiousFiles/iSeek.jar")
+        runtimeClasspath += fileTree("$geneiousFiles/lib")
+    }
+}
+
+tasks.register('runGeneious', JavaExec) {
+    dependsOn extractGeneiousRuntimeFiles
+    main 'com.biomatters.iseek.application.ISeekMain'
+    classpath sourceSets.main.runtimeClasspath
+    args 'extraPlugins=' + pluginName
+    workingDir file("$buildDir/$geneiousFilesName")
+    minHeapSize '256M'
+    maxHeapSize '2048M'
+    jvmArgs '-ea',
+            '-XX:MaxNewSize=40M',
+            '-XX:ReservedCodeCacheSize=128m',
+            '-Xss512K',
+            '-XX:+UseConcMarkSweepGC',
+            '-Djava.util.logging.config.file=no_logging.properties',
+            '--add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED'
+    environment "DISPLAY", ":0.0"
+    environment "LD_LIBRARY_PATH", "./activation/linux64:./native_libs/linux64"
+    environment "DYLD_LIBRARY_PATH", "./activation/macos:./native_libs/macos"
+}

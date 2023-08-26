@@ -1,0 +1,18 @@
+Summarize the changes:
+
+1. Refactored Runner for Email Retrieval from InterproscanOptions:
+Changes Made: The hardcoded email address in Runner was removed and instead was configured to be retrieved from InterproscanOptions.
+Justification: Hardcoding values, especially ones like email addresses, makes the code less flexible and harder to maintain. By retrieving the email from InterproscanOptions, the design becomes more adaptable to different use cases, promotes reusability, and makes configuration changes easier without touching the codebase.
+
+2. Initialization of Test Environment in RunnerTest:
+Changes Made: Introduced the TestGeneious.initialize(); line in the test setup of RunnerTest.
+Justification: The Geneious-related operations require an initialized environment before execution. Neglecting this initialization can lead to unexpected behaviors or exceptions during test runs. Ensuring the environment is prepared correctly allows the tests to run in the expected context.
+
+3. Integration of Mockito for Mocking External Service Calls:
+Changes Made: Used Mockito in RunnerTest to mock the external service calls to prevent actual network interactions during the test runs.
+Justification: In unit tests, it's pivotal to isolate the code being tested and ensure it doesn't interact with external systems. This not only speeds up the tests but also ensures reliability. By mocking external service responses using Mockito, the tests are safeguarded against network anomalies, and the behavior of external dependencies is controlled, leading to more consistent test results.
+
+4. Enhanced Error Handling and User Notification Mechanisms:
+Changes Made: Introduced error handling in the Runner's scanSequences method. In cases of unexpected errors, a dialog message (using Dialogs.showMessageDialog) was added to inform the user about the issues encountered.
+Justification: The initial code lacked a comprehensive mechanism for error handling and user notifications. By incorporating this, users are kept informed about any issues or failures, enhancing the user experience. Additionally, having error handling mechanisms in place helps in diagnosing issues faster and makes the software more robust.
+

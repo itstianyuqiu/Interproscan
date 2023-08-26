@@ -1,0 +1,73 @@
+EMBL-EBI Interproscan 5 Java Client:
+
+Protein function analysis with Interproscan 5.
+
+[Required (for job submission)]
+  --email               E-mail address.
+  --sequence            Your protein sequence can be entered directly into this form
+                        in GCG, FASTA, EMBL, PIR, NBRF or UniProtKB/Swiss-Prot
+                        format. A partially formatted sequence is not accepted.
+                        Adding a return to the end of the sequence may help certain
+                        applications understand the input. Note that directly using
+                        data from word processors may yield unpredictable results as
+                        hidden/control characters may be present.
+  --asequence           Undocumented, use with --bsequence.
+  --bsequence           Undocumented, use with --asequence.
+
+
+[Optional]
+  --goterms             Switch on look-up of corresponding Gene Ontology annotations.
+
+  --pathways            Switch on look-up of corresponding pathway annotations.
+
+  --appl                A number of different protein sequence applications are
+                        launched. These applications search against specific
+                        databases and have preconfigured cut off thresholds.
+
+
+[General]
+  -h, --help            Show this help message and exit.
+  --asyncjob            Forces to make an asynchronous query.
+  --title               Title for job.
+  --status              Get job status.
+  --resultTypes         Get available result types for job.
+  --polljob             Poll for the status of a job.
+  --pollFreq            Poll frequency in seconds (default 3s).
+  --jobid               JobId that was returned when an asynchronous job was submitted.
+  --outfile             File name for results (default is JobId; for STDOUT).
+  --outformat           Result format(s) to retrieve. It accepts comma-separated values.
+  --params              List input parameters.
+  --paramDetail         Display details for input parameter.
+  --verbose             Increase output.
+  --version             Prints out the version of the Client and exit.
+  --quiet               Decrease output.
+  --baseUrl             Base URL. Defaults to:
+                        https://www.ebi.ac.uk/Tools/services/rest/iprscan5
+
+Synchronous job:
+  The results/errors are returned as soon as the job is finished.
+  Usage: java -jar iprscan5.jar --email <your@email.com> [options...] <SeqFile|SeqID(s)>
+  Returns: results as an attachment
+
+Asynchronous job:
+  Use this if you want to retrieve the results at a later time. The results
+  are stored for up to 24 hours.
+  Usage: java -jar iprscan5.jar --asyncjob --email <your@email.com> [options...] <SeqFile|SeqID(s)>
+  Returns: jobid
+
+Check status of Asynchronous job:
+   Usage: java -jar iprscan5.jar --status --jobid <jobId>
+
+Retrieve job data:
+  Use the jobid to query for the status of the job. If the job is finished,
+  it also returns the results/errors.
+  Usage: java -jar iprscan5.jar --polljob --jobid <jobId> [--outfile string]
+  Returns: string indicating the status of the job and if applicable, results
+  as an attachment.
+
+Further information:
+  https://www.ebi.ac.uk/Tools/webservices and
+    https://github.com/ebi-wp/webservice-clients
+
+Support/Feedback:
+  https://www.ebi.ac.uk/support/";
